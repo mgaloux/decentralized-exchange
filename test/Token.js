@@ -6,12 +6,15 @@ const tokens = (n) => {
 }
 
 describe('Token', async () => {
-    let token
+    let token, accounts, deployer
 
     beforeEach(async () => {
         // Fetch token
         const Token = await ethers.getContractFactory('Token')
         token = await Token.deploy('Zeq Token', 'ZEQ', 1000000)
+
+        accounts = await ethers.getSigners()
+        deployer = accounts[0]
     })
 
     describe('Deployment', () => {
@@ -34,6 +37,10 @@ describe('Token', async () => {
     
         it('has a totalSupply', async () => {
             expect(await token.totalSupply()).to.equal(totalSupply)
+        })
+
+        it('assigns total supply to deployer', async () => {
+            expect(await token.balanceOf(deployer.address)).to.equal(totalSupply)
         })
     })
 })
