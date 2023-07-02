@@ -57,8 +57,8 @@ contract Token {
         public
         returns (bool success)
     {
-        require(balanceOf[_from] >= _value);
-        require(allowance[_from][msg.sender] >= _value);
+        require(balanceOf[_from] >= _value, 'Not enough on balance');
+        require(allowance[_from][msg.sender] >= _value, 'Not enough allowance');
 
         allowance[_from][msg.sender] -= _value;
 
