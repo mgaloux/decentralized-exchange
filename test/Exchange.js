@@ -145,7 +145,6 @@ describe('Exchange', async () => {
                 transaction = await exchange.connect(user1).depositToken(token1.address, amount)
                 result = await transaction.wait()
     
-                //Withdrawing
                 transaction = await exchange.connect(user1).makeOrder(
                     token2.address,
                     amount,
@@ -174,6 +173,60 @@ describe('Exchange', async () => {
         describe('Failure', async () => {
             it('fails for insufficient balance', async () => {
                 await expect(exchange.connect(user1).makeOrder(token2.address, amount, token1.address, tokens(1))).to.be.reverted
+            })
+        })
+    })
+
+    describe('Order actions', async () => {
+        let transaction, result
+        let amount = tokens(1)
+
+        beforeEach(async () => {
+            transaction = await token1.connect(user1).approve(exchange.address, amount)
+            result = await transaction.wait()
+            transaction = await exchange.connect(user1).depositToken(token1.address, amount)
+            result = await transaction.wait()
+
+            transaction = await exchange.connect(user1).makeOrder(
+                token2.address,
+                amount,
+                token1.address,
+                amount
+                )
+            result = await transaction.wait() 
+        })
+
+        describe('Cancelling Orders', async () => {
+            describe('Success', async () => {
+                beforeEach(async () => {
+                    transaction = await exchange.connect(user1).cancelOrder(1)
+                    result = await transaction.wait()
+                })
+    
+                it('updates canceled orders', async () => {
+                    expect(await exchange.orderCancelled(1)).to.equal(true)
+                })
+
+                it('emits an cancel event', async () => {
+                    expect(result.events[0].event).to.equal('Cancel')
+                    expect(result.events[0].args.id).to.equal(1)
+                    expect(result.events[0].args.user).to.equal(user1.address)
+                    expect(result.events[0].args.tokenGet).to.equal(token2.address)
+                    expect(result.events[0].args.tokenGive).to.equal(token1.address)
+                    expect(result.events[0].args.amountGet).to.equal(amount)
+                    expect(result.events[0].args.amountGive).to.equal(amount)
+                    expect(result.events[0].args.timestamp).to.at.least(1)
+                })
+            })
+    
+            describe('Failure', async () => {
+                it('order must exist', async () => {
+                    await expect(exchange.connect(user1).cancelOrder(9999)).to.be.reverted
+                })
+
+                it('reject unauthorized cancellations', async () => {
+                    await expect(exchange.connect(user2).cancelOrder(1)).to.be.reverted
+                })
             })
         })
     })
