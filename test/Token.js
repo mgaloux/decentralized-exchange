@@ -111,4 +111,42 @@ describe('Token', async () => {
             })
         })
     })
+
+    describe('Delegated Token Transfers', () => {
+        let amount, transaction, result
+
+        beforeEach(async () => {
+            amount = tokens(100)
+            transaction = await token.connect(deployer).approve(exchange.address, amount)
+            result = await transaction.wait()
+        })
+
+        describe('Success', async () => {
+            beforeEach(async () => {
+                transaction = await token.connect(exchange).transferFrom(deployer.address, receiver.address, amount)
+                result = await transaction.wait()
+            })
+
+            it('transfers token balances', async () => {
+                expect(await token.balanceOf(deployer.address)).to.be.equal(ethers.utils.parseUnits('999900', 'ether'))
+                expect(await token.balanceOf(receiver.address)).to.be.equal(amount)
+            })
+            
+            it('resets allowance', async () => {
+                expect(await token.allowance(deployer.address, exchange.address)).to.be.equal(0)
+            })
+
+            it('emits a transfer event', async () => {
+                expect(result.events[0].event).to.equal('Transfer')
+                expect(result.events[0].args.from).to.equal(deployer.address)
+                expect(result.events[0].args.to).to.equal(receiver.address)
+                expect(result.events[0].args.value).to.equal(amount)
+            })
+        })
+
+        describe('Failure', async () => {
+            const invalidAmount = tokens(100000000)
+            expect(await token.connect().transferFrom(deployer.address, receiver.address, invalidAmount)).to.be.reverted
+        })
+    })
 })
