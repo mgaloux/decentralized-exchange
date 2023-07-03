@@ -77,7 +77,7 @@ contract Exchange {
 
     function depositToken(address _token, uint256 _amount) public {
         // Transfer Tokens to exchange
-        require(Token(_token).transferFrom(msg.sender, address(this), _amount));
+        require(Token(_token).transferFrom(msg.sender, address(this), _amount), 'Token transferFrom didn\'t work');
 
         // update user balance
         tokens[_token][msg.sender] += _amount;
@@ -87,7 +87,7 @@ contract Exchange {
     }
 
     function withdrawToken(address _token, uint256 _amount) public {
-        require(tokens[_token][msg.sender] >= _amount);
+        require(tokens[_token][msg.sender] >= _amount, 'insufficient registered tokens');
 
         // transfer tokens to user
         Token(_token).transfer(msg.sender, _amount);
@@ -117,7 +117,8 @@ contract Exchange {
         uint256 _amountGive
     ) public 
     {
-        require(balanceOf(_tokenGive, msg.sender) >= _amountGive);
+        console.log("balance of :", balanceOf(_tokenGive, msg.sender), "amountGive", _amountGive);
+        require(balanceOf(_tokenGive, msg.sender) >= _amountGive, "insufficient funds for order");
 
         orderCount++;
         orders[orderCount] = _Order(
@@ -163,8 +164,8 @@ contract Exchange {
     // ---------------------
     // EXECUTING ORDERS
     function fillOrder(uint256 _id) public {
-        require(!orderCancelled[_id]);
-        require(!orderFilled[_id]);
+        require(!orderCancelled[_id], 'order was cancelled');
+        require(!orderFilled[_id], 'order was filled');
         require(_id > 0 && _id <= orderCount, 'Order does not exist');
 
         // fetch 
