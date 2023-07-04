@@ -10,6 +10,8 @@ import {
   loadExchange
 } from '../store/interactions';
 
+import Navbar from './Navbar';
+
 
 function App() {
 
@@ -22,18 +24,25 @@ function App() {
 
     // Fetch current network chainId
     const chainId = await loadNetwork(provider, dispatch)
+
+    // Reload page when network changes
+    window.ethereum.on('chainChanged', () => {
+      window.location.reload()
+    })
     
-    // Fetch current account & balance from MetaMask
-    await loadAccount(provider, dispatch)
+    // Fetch current account & balance from MetaMask WHEN user changes account
+    window.ethereum.on('accountsChanged', () => {
+      loadAccount(provider, dispatch)
+    })
 
     // Token smart contract
-    const ZeqToken = config[chainId].ZeqToken
-    const mETH = config[chainId].mETH
-    await loadTokens(provider, [ZeqToken.address, mETH.address], dispatch)
+    // const ZeqToken = config[chainId].ZeqToken
+    // const mETH = config[chainId].mETH
+    // await loadTokens(provider, [ZeqToken.address, mETH.address], dispatch)
 
     // Load Exchange
-    const exchangeConfig = config[chainId].exchange
-    await loadExchange(provider, exchangeConfig.address, dispatch)
+    // const exchangeConfig = config[chainId].exchange
+    // await loadExchange(provider, exchangeConfig.address, dispatch)
   }
 
   useEffect(() => {
@@ -44,7 +53,7 @@ function App() {
   return (
     <div>
 
-      {/* Navbar */}
+      <Navbar/>
 
       <main className='exchange grid'>
         <section className='exchange__section--left grid'>
