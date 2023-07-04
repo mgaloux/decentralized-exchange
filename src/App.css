@@ -252,6 +252,8 @@ small {
 	color: var(--clr-text);
 	border: none;
 
+    font-family: 'DM Sans';
+
 	width: 100%;
 	padding: 1em;
 

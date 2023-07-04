@@ -11,7 +11,6 @@ const Navbar = () => {
     const balance = useSelector(state => state.provider.balance)
     const provider = useSelector(state => state.provider.connection)
     const chainId = useSelector(state => state.provider.chainId)
-    console.log('hihi', config[chainId] ? `0x${chainId.toString(16)}` : `0`)
 
     const connectHandler = async () => {
         await loadAccount(provider, dispatch)

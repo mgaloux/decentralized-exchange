@@ -11,6 +11,7 @@ import {
 } from '../store/interactions';
 
 import Navbar from './Navbar';
+import Markets from './Markets';
 
 
 function App() {
@@ -36,13 +37,13 @@ function App() {
     })
 
     // Token smart contract
-    // const ZeqToken = config[chainId].ZeqToken
-    // const mETH = config[chainId].mETH
-    // await loadTokens(provider, [ZeqToken.address, mETH.address], dispatch)
+    const ZeqToken = config[chainId].ZeqToken
+    const mETH = config[chainId].mETH
+    await loadTokens(provider, [ZeqToken.address, mETH.address], dispatch)
 
     // Load Exchange
-    // const exchangeConfig = config[chainId].exchange
-    // await loadExchange(provider, exchangeConfig.address, dispatch)
+    const exchangeConfig = config[chainId].exchange
+    await loadExchange(provider, exchangeConfig.address, dispatch)
   }
 
   useEffect(() => {
@@ -58,7 +59,7 @@ function App() {
       <main className='exchange grid'>
         <section className='exchange__section--left grid'>
 
-          {/* Markets */}
+          <Markets/>
 
           {/* Balance */}
 
