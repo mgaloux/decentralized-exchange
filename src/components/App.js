@@ -6,7 +6,8 @@ import {
   loadProvider,
   loadNetwork,
   loadAccount,
-  loadToken
+  loadTokens,
+  loadExchange
 } from '../store/interactions';
 
 
@@ -15,14 +16,24 @@ function App() {
   const dispatch = useDispatch()
 
   const loadBlockchainData = async () => {
-    await loadAccount(dispatch)
 
     // Connect ethers to blockchain
     const provider = loadProvider(dispatch)
+
+    // Fetch current network chainId
     const chainId = await loadNetwork(provider, dispatch)
+    
+    // Fetch current account & balance from MetaMask
+    await loadAccount(provider, dispatch)
 
     // Token smart contract
-    await loadToken(provider, config[chainId].ZeqToken.address, dispatch)
+    const ZeqToken = config[chainId].ZeqToken
+    const mETH = config[chainId].mETH
+    await loadTokens(provider, [ZeqToken.address, mETH.address], dispatch)
+
+    // Load Exchange
+    const exchangeConfig = config[chainId].exchange
+    await loadExchange(provider, exchangeConfig.address, dispatch)
   }
 
   useEffect(() => {
