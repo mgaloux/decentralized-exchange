@@ -130,7 +130,6 @@ export const makeBuyOrder = async(provider, exchange, tokens, order, dispatch) =
 }
 
 export const makeSellOrder = async(provider, exchange, tokens, order, dispatch) => {
-    console.log('making sell order')
     const tokenGet = tokens[1].address
     const amountGet = ethers.utils.parseUnits((order.amount * order.price).toString(), 18)
     const tokenGive = tokens[0].address
