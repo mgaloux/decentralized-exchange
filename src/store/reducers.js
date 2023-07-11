@@ -67,7 +67,11 @@ const DEFAULT_EXCHANGE_STATE =
     loaded: false,
     contract: {},
     transaction: { isSuccesful: false },
-    events: []
+    events: [],
+    allOrders: {
+        loaded: false, 
+        data: []
+    }
 }
 
 export const exchange = (state = DEFAULT_EXCHANGE_STATE, action) => {
@@ -90,6 +94,8 @@ export const exchange = (state = DEFAULT_EXCHANGE_STATE, action) => {
                 ...state,
                 balances: [...state.balances, action.balance]
             }
+
+        // transfers
         case 'TRANSFER_REQUEST':
             return {
                 ...state,
@@ -121,6 +127,53 @@ export const exchange = (state = DEFAULT_EXCHANGE_STATE, action) => {
                     isError: true
                 },
                 transferInProgress: false,
+            }
+
+        // making orders
+        case 'NEW_ORDER_REQUEST':
+            return {
+                ...state,
+                transaction: {
+                    transactionType: 'New Order',
+                    isPending: true,
+                    isSuccesful: false,
+                },
+            }
+
+        case 'NEW_ORDER_SUCCESS':
+            
+            // Prevent duplicates
+            let index, data
+            index = state.allOrders.data.findIndex(order => order.id === action.order.id)
+
+            if (index === -1) {
+                data = [...state.allOrders.data, action.order]
+            } else {
+                data = state.allOrders.data
+            }
+
+            return {
+                ...state,
+                allOrders: {
+                    ...state.allOrders,
+                    data
+                },
+                transaction: {
+                    transactionType: 'New Order',
+                    isPending: false,
+                    isSuccesful: true,
+                },
+                events: [action.event, ...state.events]
+            }
+        case 'NEW_ORDER_FAIL':
+            return {
+                ...state,
+                transaction: {
+                    transactionType: 'New Order',
+                    isPending: false,
+                    isSuccesful: false,
+                    isError: true
+                },
             }
         default:
             return state
