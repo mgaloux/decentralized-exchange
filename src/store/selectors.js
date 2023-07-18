@@ -1,5 +1,5 @@
 import { createSelector } from 'reselect'
-import { get, groupBy, reject, maxBy, minBy, max } from 'lodash'
+import { get, groupBy, reject, maxBy, minBy } from 'lodash'
 import { ethers } from 'ethers'
 import moment from 'moment'
 
@@ -21,7 +21,7 @@ const openOrders = state => {
         const orderFilled = filled.some((o) => o.id.toString() === order.id.toString())
         const orderCancelled = cancelled.some((o) => o.id.toString() === order.id.toString())
 
-        return orderFilled || orderCancelled
+        return (orderFilled || orderCancelled)
     })
 
     return openOrders
@@ -30,33 +30,10 @@ const openOrders = state => {
 const GREEN = '#25CE8F'
 const RED = '#F45353'
 
-export const decorateOrderBookOrders = (orders, tokens) => {
-    return (
-        orders.map((order) => {
-            order = decorateOrder(order, tokens)
-            order = decorateOrderBookOrder(order, tokens)
-            return (order)
-        })
-    )
-}
-
-export const decorateOrderBookOrder = (order, tokens) => {
-    const orderType = order.tokenGive === tokens[1].address ? 'buy' : 'sell'
-
-    return ({
-        ...order,
-        orderType,
-        orderTypeClass: (orderType === 'buy' ? GREEN : RED),
-        orderFillAction: (orderType === 'buy' ? 'buy' : 'sell')
-    })
-}
-
-
 // MY ORDERS
 export const myOpenOrdersSelector = createSelector(
     account, tokens, openOrders, (account, tokens, orders) => {
         if (!tokens[0] || !tokens[1]) { return }
-
 
         // filter by account
         orders = orders.filter((o) => o.user === account)
@@ -72,8 +49,7 @@ export const myOpenOrdersSelector = createSelector(
         orders = orders.sort((a,b) => b.timestamp - a.timestamp)
 
         return orders
-    }
-    
+    }   
 )
 
 const decorateMyOpenOrders = (orders, tokens) => {
@@ -266,6 +242,28 @@ export const orderBookSelector = createSelector(
         
         return orders
 })
+
+export const decorateOrderBookOrders = (orders, tokens) => {
+    return (
+        orders.map((order) => {
+            order = decorateOrder(order, tokens)
+            order = decorateOrderBookOrder(order, tokens)
+            return (order)
+        })
+    )
+}
+
+export const decorateOrderBookOrder = (order, tokens) => {
+    const orderType = order.tokenGive === tokens[1].address ? 'buy' : 'sell'
+
+    return ({
+        ...order,
+        orderType,
+        orderTypeClass: (orderType === 'buy' ? GREEN : RED),
+        orderFillAction: (orderType === 'buy' ? 'buy' : 'sell')
+    })
+}
+
 
 // PRICE CHART /////////////////////////////////////////////////
 //

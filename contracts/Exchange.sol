@@ -117,7 +117,6 @@ contract Exchange {
         uint256 _amountGive
     ) public 
     {
-        console.log("balance of :", balanceOf(_tokenGive, msg.sender), "amountGive", _amountGive);
         require(balanceOf(_tokenGive, msg.sender) >= _amountGive, "insufficient funds for order");
 
         orderCount++;
@@ -152,7 +151,7 @@ contract Exchange {
 
         // cancel
         emit Cancel(
-            orderCount,
+            _order.id,
             msg.sender,
             _order.tokenGet,
             _order.amountGet,
