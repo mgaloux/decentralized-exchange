@@ -22,10 +22,6 @@ const Transactions = () => {
       cancelOrder(provider, exchange, order, dispatch)
     }
 
-    useEffect(() => {
-      console.log('myOpenOrders', myOpenOrders)
-    }, [myOpenOrders])
-
     const tabHandler = (e) => {
       if (e.target.className !== ordersRef.current.className) {
           e.target.className = 'tab tab--active'
