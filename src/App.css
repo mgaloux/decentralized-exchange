@@ -623,6 +623,7 @@ table td {
 }
 
 .alert--remove {
+	transition: all 500ms ease;
 	opacity: 0;
 	pointer-events: none;
 }
