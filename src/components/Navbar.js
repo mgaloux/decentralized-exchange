@@ -38,6 +38,7 @@ const Navbar = () => {
                         <option value="0" disabled>Select Network</option>
                         <option value="0x7A69">Localhost</option>
                         <option value="0xaa36a7">Sepolia</option>
+                        <option value="0x13881">Mumbai</option>
                     </select>
                 }
             </div>
